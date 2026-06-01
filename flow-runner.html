@@ -596,18 +596,56 @@
               a.decision &&
               a.decision !== "undecided" &&
               a.decision !== e.label;
-            const ax = a.x + (a.type === "decision" ? 75 : 95),
-              ay = a.y + (a.type === "decision" ? 150 : 78);
-            const bx = b.x + (b.type === "decision" ? 75 : 95),
-              by = b.y;
+            const aEl = canvas.querySelector(`.node[data-id="${a.id}"]`);
+            const bEl = canvas.querySelector(`.node[data-id="${b.id}"]`);
+            if (!aEl || !bEl) continue;
+            const aRect = aEl.getBoundingClientRect();
+            const bRect = bEl.getBoundingClientRect();
+            const aCenter = {
+              x: aRect.left - rect.left + aRect.width / 2,
+              y: aRect.top - rect.top + aRect.height / 2,
+            };
+            const bCenter = {
+              x: bRect.left - rect.left + bRect.width / 2,
+              y: bRect.top - rect.top + bRect.height / 2,
+            };
+            const dx = bCenter.x - aCenter.x;
+            const dy = bCenter.y - aCenter.y;
+            const horizontal = Math.abs(dx) > Math.abs(dy);
+            let ax = horizontal
+              ? aRect.left - rect.left + (dx > 0 ? aRect.width : 0)
+              : aCenter.x;
+            let ay = horizontal
+              ? aCenter.y
+              : aRect.top - rect.top + (dy > 0 ? aRect.height : 0);
+            let bx = horizontal
+              ? bRect.left - rect.left + (dx > 0 ? 0 : bRect.width)
+              : bCenter.x;
+            let by = horizontal
+              ? bCenter.y
+              : bRect.top - rect.top + (dy > 0 ? 0 : bRect.height);
+            const arrowPadding = 2;
+            if (horizontal) {
+              ax += Math.sign(dx) * arrowPadding;
+              bx -= Math.sign(dx) * arrowPadding;
+            } else {
+              ay += Math.sign(dy) * arrowPadding;
+              by -= Math.sign(dy) * arrowPadding;
+            }
             const path = document.createElementNS(
               "http://www.w3.org/2000/svg",
               "path",
             );
+            const cp1 = horizontal
+              ? { x: ax + dx * 0.25, y: ay }
+              : { x: ax, y: ay + dy * 0.25 };
+            const cp2 = horizontal
+              ? { x: bx - dx * 0.25, y: by }
+              : { x: bx, y: by - dy * 0.25 };
             const mid = (ay + by) / 2;
             path.setAttribute(
               "d",
-              `M ${ax} ${ay} C ${ax} ${mid}, ${bx} ${mid}, ${bx} ${by}`,
+              `M ${ax} ${ay} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${bx} ${by}`,
             );
             path.setAttribute("fill", "none");
             path.setAttribute(
@@ -615,7 +653,7 @@
               chosen ? "#16a34a" : muted ? "#d1d5db" : "#9ca3af",
             );
             path.setAttribute("stroke-width", chosen ? "4" : "2");
-            path.setAttribute("marker-end", "url(#arrow)");
+            path.setAttribute("marker-end", "url(#arrowTip)");
             lines.appendChild(path);
             if (e.label) {
               const tx = (ax + bx) / 2,
@@ -638,7 +676,7 @@
             "defs",
           );
           defs.innerHTML =
-            '<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af"/></marker>';
+            '<marker id="arrowTip" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 12 6 L 0 12 z" fill="#9ca3af"/></marker>';
           lines.prepend(defs);
         }
         function renderLibrary() {
@@ -677,12 +715,27 @@
             .filter((x) => x.id !== n.id)
             .map((x) => `<option value="${x.id}">${esc(x.label)}</option>`)
             .join("");
-          const outgoing = flow.edges.filter((e) => e.from === n.id);
+          const allConnected = flow.edges.filter(
+            (e) => e.from === n.id || e.to === n.id,
+          );
           $("editor").innerHTML = `
       <div class="field"><label>Label</label><textarea id="editLabel">${esc(n.label)}</textarea></div>
       <div class="row"><div class="field"><label>X</label><input id="editX" type="number" value="${n.x}"></div><div class="field"><label>Y</label><input id="editY" type="number" value="${n.y}"></div></div>
-      <div class="field"><label>Add connection to</label><div class="row"><select id="connectTo">${options}</select><input id="connectLabel" placeholder="label: yes/no/blank"><button id="addEdgeBtn">Add</button></div></div>
-      <table class="edgeTable"><tr><th>To</th><th>Label</th><th></th></tr>${outgoing.map((e, i) => `<tr><td>${esc(flow.nodes.find((x) => x.id === e.to)?.label || "?")}</td><td>${esc(e.label || "")}</td><td><button class="small secondary" data-edge="${i}">remove</button></td></tr>`).join("")}</table>
+      <div class="field"><label>Add connection</label><div class="row"><select id="connectTo">${options}</select><input id="connectLabel" placeholder="label: yes/no/blank"></div>
+      <div style="margin:6px 0; font-size:12px">
+        <label style="display:flex; gap:6px; margin:4px 0"><input type="radio" name="direction" value="out" checked> from this node →</label>
+        <label style="display:flex; gap:6px; margin:4px 0"><input type="radio" name="direction" value="in"> ← to this node</label>
+      </div>
+      <button id="addEdgeBtn" style="width:100%">Add connection</button></div>
+      <table class="edgeTable"><tr><th>Connection</th><th>Label</th><th></th></tr>${allConnected
+        .map((e, i) => {
+          const isOutgoing = e.from === n.id;
+          const otherNodeId = isOutgoing ? e.to : e.from;
+          const otherNode = flow.nodes.find((x) => x.id === otherNodeId);
+          const arrow = isOutgoing ? "→" : "←";
+          return `<tr><td>${arrow} ${esc(otherNode?.label || "?")}</td><td>${esc(e.label || "")}</td><td><button class="small secondary" data-edge="${i}" data-dir="${isOutgoing ? "out" : "in"}" data-other-node="${otherNodeId}" data-edge-label="${e.label || ""}">remove</button></td></tr>`;
+        })
+        .join("")}</table>
       <div class="toolbar" style="margin-top:10px"><button class="danger" id="removeNodeBtn">Remove node</button></div>`;
           // Update label live without re-creating the editor element on every keystroke
           let labelSaveTimer;
@@ -713,11 +766,21 @@
             saveFlow();
           };
           $("addEdgeBtn").onclick = () => {
-            flow.edges.push({
-              from: n.id,
-              to: $("connectTo").value,
-              label: $("connectLabel").value.trim().toLowerCase(),
-            });
+            const direction = document.querySelector(
+              'input[name="direction"]:checked',
+            ).value;
+            const toNodeId = $("connectTo").value;
+            const label = $("connectLabel").value.trim().toLowerCase();
+            if (direction === "out") {
+              flow.edges.push({ from: n.id, to: toNodeId, label });
+            } else {
+              flow.edges.push({ from: toNodeId, to: n.id, label });
+            }
+            // reset form
+            $("connectLabel").value = "";
+            document.querySelector(
+              'input[name="direction"][value="out"]',
+            ).checked = true;
             saveFlow();
           };
           $("editor")
@@ -725,10 +788,24 @@
             .forEach(
               (btn) =>
                 (btn.onclick = () => {
-                  const idx = flow.edges.findIndex(
-                    (e) => e === outgoing[+btn.dataset.edge],
-                  );
-                  flow.edges.splice(idx, 1);
+                  const otherNodeId = btn.dataset.otherNode;
+                  const label = btn.dataset.edgeLabel;
+                  const dir = btn.dataset.dir;
+                  const idx = flow.edges.findIndex((e) => {
+                    if (dir === "out")
+                      return (
+                        e.from === n.id &&
+                        e.to === otherNodeId &&
+                        e.label === label
+                      );
+                    else
+                      return (
+                        e.to === n.id &&
+                        e.from === otherNodeId &&
+                        e.label === label
+                      );
+                  });
+                  if (idx >= 0) flow.edges.splice(idx, 1);
                   saveFlow();
                 }),
             );

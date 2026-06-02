@@ -1,0 +1,41 @@
+{
+  "id": "flow_buyit",
+  "name": "Should I buy it?",
+  "nodes": [
+    { "id": "n1", "type": "step", "label": "Find item you want to buy", "x": 320, "y": 30, "state": "open" },
+    { "id": "n2", "type": "decision", "label": "Do you already own one?", "x": 305, "y": 140, "decision": "undecided" },
+    { "id": "n3", "type": "decision", "label": "Is yours broken or worn out?", "x": 80, "y": 310, "decision": "undecided" },
+    { "id": "n4", "type": "step", "label": "Close the tab. Walk away.", "x": 80, "y": 480, "state": "open" },
+    { "id": "n5", "type": "decision", "label": "Can you afford it without stress?", "x": 530, "y": 310, "decision": "undecided" },
+    { "id": "n6", "type": "decision", "label": "Is it on sale?", "x": 305, "y": 480, "decision": "undecided" },
+    { "id": "n7", "type": "step", "label": "Wait for a sale or save up first", "x": 530, "y": 480, "state": "open" },
+    { "id": "n8", "type": "decision", "label": "Is the sale legit?", "x": 80, "y": 650, "decision": "undecided" },
+    { "id": "n9", "type": "decision", "label": "Will you use it more than twice?", "x": 530, "y": 650, "decision": "undecided" },
+    { "id": "n10", "type": "step", "label": "Check price history (CamelCamelCamel, etc.)", "x": 80, "y": 820, "state": "open" },
+    { "id": "n11", "type": "step", "label": "Add to cart anyway — it's not that serious", "x": 530, "y": 820, "state": "open" },
+    { "id": "n12", "type": "step", "label": "Do not buy it. It will collect dust.", "x": 780, "y": 820, "state": "open" },
+    { "id": "n13", "type": "decision", "label": "Sleep on it — still want it tomorrow?", "x": 505, "y": 980, "decision": "undecided" },
+    { "id": "n14", "type": "step", "label": "Buy it. You've earned it.", "x": 530, "y": 1150, "state": "open" },
+    { "id": "n15", "type": "step", "label": "Dodged a bullet. Close the tab.", "x": 280, "y": 1150, "state": "open" }
+  ],
+  "edges": [
+    { "from": "n1", "to": "n2", "label": "" },
+    { "from": "n2", "to": "n3", "label": "yes" },
+    { "from": "n2", "to": "n5", "label": "no" },
+    { "from": "n3", "to": "n5", "label": "yes" },
+    { "from": "n3", "to": "n4", "label": "no" },
+    { "from": "n5", "to": "n6", "label": "yes" },
+    { "from": "n5", "to": "n7", "label": "no" },
+    { "from": "n6", "to": "n8", "label": "yes" },
+    { "from": "n6", "to": "n9", "label": "no" },
+    { "from": "n8", "to": "n10", "label": "unsure" },
+    { "from": "n8", "to": "n9", "label": "yes" },
+    { "from": "n9", "to": "n11", "label": "yes" },
+    { "from": "n9", "to": "n12", "label": "no" },
+    { "from": "n10", "to": "n9", "label": "" },
+    { "from": "n11", "to": "n13", "label": "" },
+    { "from": "n13", "to": "n14", "label": "yes" },
+    { "from": "n13", "to": "n15", "label": "no" }
+  ],
+  "updatedAt": "2026-06-01T00:00:00.000Z"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "flow_eatit",
+  "name": "Should I eat it?",
+  "nodes": [
+    { "id": "n1", "type": "step", "label": "Locate suspicious food item", "x": 320, "y": 30, "state": "open" },
+    { "id": "n2", "type": "decision", "label": "Is it fuzzy?", "x": 305, "y": 140, "decision": "undecided" },
+    { "id": "n3", "type": "decision", "label": "Is it a peach?", "x": 80, "y": 310, "decision": "undecided" },
+    { "id": "n4", "type": "decision", "label": "Does it smell okay?", "x": 530, "y": 310, "decision": "undecided" },
+    { "id": "n5", "type": "step", "label": "Eat the peach. You earned it.", "x": 80, "y": 480, "state": "open" },
+    { "id": "n6", "type": "step", "label": "Do NOT eat it. Throw it away. Now.", "x": 230, "y": 480, "state": "open" },
+    { "id": "n7", "type": "decision", "label": "How old is it?", "x": 530, "y": 480, "decision": "undecided" },
+    { "id": "n8", "type": "step", "label": "Perfectly fine. Eat it.", "x": 390, "y": 650, "state": "open" },
+    { "id": "n9", "type": "decision", "label": "Are you very hungry?", "x": 600, "y": 650, "decision": "undecided" },
+    { "id": "n10", "type": "decision", "label": "Is it just a little past the date?", "x": 780, "y": 480, "decision": "undecided" },
+    { "id": "n11", "type": "step", "label": "Eat it. You'll be fine probably.", "x": 780, "y": 650, "state": "open" },
+    { "id": "n12", "type": "step", "label": "Reconsider your life. Throw it out.", "x": 600, "y": 820, "state": "open" },
+    { "id": "n13", "type": "step", "label": "Absolutely do not eat it.", "x": 900, "y": 650, "state": "open" }
+  ],
+  "edges": [
+    { "from": "n1", "to": "n2", "label": "" },
+    { "from": "n2", "to": "n3", "label": "yes" },
+    { "from": "n2", "to": "n4", "label": "no" },
+    { "from": "n3", "to": "n5", "label": "yes" },
+    { "from": "n3", "to": "n6", "label": "no" },
+    { "from": "n4", "to": "n7", "label": "yes" },
+    { "from": "n4", "to": "n6", "label": "no" },
+    { "from": "n7", "to": "n8", "label": "today" },
+    { "from": "n7", "to": "n9", "label": "few days" },
+    { "from": "n7", "to": "n10", "label": "expired" },
+    { "from": "n9", "to": "n11", "label": "yes" },
+    { "from": "n9", "to": "n12", "label": "no" },
+    { "from": "n10", "to": "n11", "label": "yes" },
+    { "from": "n10", "to": "n13", "label": "no" }
+  ],
+  "updatedAt": "2026-06-01T00:00:00.000Z"
+}

@@ -19,68 +19,380 @@
         --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         --radius: 14px;
       }
-      * { box-sizing: border-box; }
-      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--ink); }
-      header { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--panel); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 5; }
-      h1 { font-size: 18px; margin: 0; }
-      button, input, select, textarea { font: inherit; }
-      button { border: 0; border-radius: 10px; padding: 9px 12px; background: var(--accent); color: white; cursor: pointer; }
-      button.secondary { background: #e5e7eb; color: #111827; }
-      button.danger { background: var(--bad); }
-      button.small { padding: 5px 8px; font-size: 12px; }
-      input, select, textarea { border: 1px solid #d1d5db; border-radius: 10px; padding: 9px; background: white; color: var(--ink); }
-      textarea { width: 100%; min-height: 74px; resize: vertical; }
-      main { display: grid; grid-template-columns: 360px 10px 1fr; gap: 14px; padding: 14px; min-height: calc(100vh - 62px); }
-      aside, .canvasWrap { background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; overflow: auto; }
-      .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-      .row { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
-      .row > * { flex: 1; }
-      .section { border-top: 1px solid #e5e7eb; margin-top: 12px; padding-top: 12px; }
-      .hint { color: var(--muted); font-size: 13px; line-height: 1.35; }
-      .list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-      .item { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px; background: #fafafa; }
-      .item.active { outline: 2px solid var(--accent); }
-      .item b { display: block; margin-bottom: 5px; }
-      .item .meta { font-size: 12px; color: var(--muted); }
-      .canvas { position: relative; min-height: 720px; min-width: 760px; border: 1px dashed #d1d5db; border-radius: 12px; background: linear-gradient(#f9fafb, #fff); overflow: hidden; }
-      svg.lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-      .node { position: absolute; width: 190px; min-height: 78px; background: white; border: 2px solid #d1d5db; border-radius: 14px; padding: 10px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); cursor: grab; user-select: none; }
-      #splitter { width: 10px; display: flex; align-items: center; justify-content: center; cursor: col-resize; background: transparent; margin: 0; height: 100%; align-self: stretch; z-index: 3; }
-      #splitter::before { content: ""; width: 2px; height: 60%; background: #e5e7eb; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.02) inset; }
-      #splitter:hover::before { background: #cbd5e1; width: 3px; }
-      @media (max-width: 900px) { #splitter { display: none; } }
-      .node.decision { border-radius: 8px; transform: rotate(45deg); width: 150px; height: 150px; padding: 0; }
-      .node.decision .inner { transform: rotate(-45deg); width: 210px; height: 130px; margin: -2px 0 0 -30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; }
-      .node:active { cursor: grabbing; }
-      .node.selected { outline: 3px solid var(--accent); }
-      .title { font-weight: 700; margin-bottom: 7px; }
-      .state { display: inline-block; border-radius: 999px; padding: 3px 8px; font-size: 12px; background: var(--open); }
-      .state.in-progress { background: #fef3c7; }
-      .state.completed { background: #dcfce7; }
-      .state.no { background: #fee2e2; }
-      .state.yes { background: #dcfce7; }
-      .state.undecided { background: #e5e7eb; }
-      .nodeControls { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
-      .nodeControls button { font-size: 11px; padding: 4px 6px; }
-      .mode-run .editableOnly { display: none; }
-      .mode-edit .runOnly { display: none; }
-      .mode-run .node { cursor: pointer; }
-      .field { margin: 8px 0; }
-      .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-      .edgeTable { width: 100%; border-collapse: collapse; font-size: 13px; }
-      .edgeTable td, .edgeTable th { border-bottom: 1px solid #e5e7eb; padding: 5px; text-align: left; }
-      .pill { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; border-radius: 999px; padding: 4px 8px; font-size: 12px; }
-      .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 10; }
-      .modal.open { display: flex; }
-      .dialog { background: white; border-radius: 16px; box-shadow: var(--shadow); padding: 16px; width: min(720px, 92vw); max-height: 82vh; overflow: auto; }
-      .jsonBox { height: 280px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-      .topTitle { display: flex; gap: 8px; align-items: center; }
-      .topTitle input { width: 260px; }
-      .kbd { font-family: monospace; border: 1px solid #d1d5db; border-bottom-width: 2px; border-radius: 5px; padding: 1px 4px; background: #fff; }
-      .file-drop-zone { border: 2px dashed #d1d5db; border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); font-size: 13px; cursor: pointer; transition: border-color 0.15s, background 0.15s; margin-bottom: 10px; }
-      .file-drop-zone:hover, .file-drop-zone.drag-over { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
-      .file-drop-zone.has-file { border-color: var(--ok); background: #f0fdf4; color: #166534; }
-      @media (max-width: 900px) { main { grid-template-columns: 1fr; } aside { order: 2; } .canvasWrap { order: 1; } .canvas { min-width: 700px; } }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      header {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 12px;
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      button.danger {
+        background: var(--bad);
+      }
+      button.small {
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+      input,
+      select,
+      textarea {
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 9px;
+        background: white;
+        color: var(--ink);
+      }
+      textarea {
+        width: 100%;
+        min-height: 74px;
+        resize: vertical;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 360px 10px 1fr;
+        gap: 14px;
+        padding: 14px;
+        min-height: calc(100vh - 62px);
+        height: calc(100vh - 62px);
+      }
+      aside,
+      .canvasWrap {
+        background: var(--panel);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px;
+        overflow: auto;
+        height: 100%;
+      }
+      .canvasWrap {
+        min-height: 0;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .section {
+        border-top: 1px solid #e5e7eb;
+        margin-top: 12px;
+        padding-top: 12px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .item {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 10px;
+        background: #fafafa;
+      }
+      .item.active {
+        outline: 2px solid var(--accent);
+      }
+      .item b {
+        display: block;
+        margin-bottom: 5px;
+      }
+      .item .meta {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .canvas {
+        position: relative;
+        min-height: 720px;
+        min-width: 760px;
+        border: 1px dashed #d1d5db;
+        border-radius: 12px;
+        background: linear-gradient(#f9fafb, #fff);
+        overflow: hidden;
+      }
+      svg.lines {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .node {
+        position: absolute;
+        width: 190px;
+        min-height: 78px;
+        background: white;
+        border: 2px solid #d1d5db;
+        border-radius: 14px;
+        padding: 10px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        cursor: grab;
+        user-select: none;
+      }
+      #splitter {
+        width: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: col-resize;
+        background: transparent;
+        margin: 0;
+        height: 100%;
+        align-self: stretch;
+        z-index: 3;
+      }
+      #splitter::before {
+        content: "";
+        width: 2px;
+        height: 60%;
+        background: #e5e7eb;
+        border-radius: 2px;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02) inset;
+      }
+      #splitter:hover::before {
+        background: #cbd5e1;
+        width: 3px;
+      }
+      @media (max-width: 900px) {
+        #splitter {
+          display: none;
+        }
+      }
+      .node.decision {
+        border-radius: 8px;
+        transform: rotate(45deg);
+        width: 150px;
+        height: 150px;
+        padding: 0;
+      }
+      .node.decision .inner {
+        transform: rotate(-45deg);
+        width: 210px;
+        height: 130px;
+        margin: -2px 0 0 -30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 6px;
+      }
+      .node:active {
+        cursor: grabbing;
+      }
+      .node.selected {
+        outline: 3px solid var(--accent);
+      }
+      .title {
+        font-weight: 700;
+        margin-bottom: 7px;
+      }
+      .state {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 12px;
+        background: var(--open);
+      }
+      .state.in-progress {
+        background: #fef3c7;
+      }
+      .state.completed {
+        background: #dcfce7;
+      }
+      .state.no {
+        background: #fee2e2;
+      }
+      .state.yes {
+        background: #dcfce7;
+      }
+      .state.undecided {
+        background: #e5e7eb;
+      }
+      .nodeControls {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .nodeControls button {
+        font-size: 11px;
+        padding: 4px 6px;
+      }
+      .mode-run .editableOnly {
+        display: none;
+      }
+      .mode-edit .runOnly {
+        display: none;
+      }
+      .mode-run .node {
+        cursor: pointer;
+      }
+      .field {
+        margin: 8px 0;
+      }
+      .field label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .edgeTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .edgeTable td,
+      .edgeTable th {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 5px;
+        text-align: left;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #eef2ff;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      .modal.open {
+        display: flex;
+      }
+      .dialog {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 16px;
+        width: min(720px, 92vw);
+        max-height: 82vh;
+        overflow: auto;
+      }
+      .jsonBox {
+        height: 280px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+      .topTitle {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .topTitle input {
+        width: 260px;
+      }
+      .kbd {
+        font-family: monospace;
+        border: 1px solid #d1d5db;
+        border-bottom-width: 2px;
+        border-radius: 5px;
+        padding: 1px 4px;
+        background: #fff;
+      }
+      .file-drop-zone {
+        border: 2px dashed #d1d5db;
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        margin-bottom: 10px;
+      }
+      .file-drop-zone:hover,
+      .file-drop-zone.drag-over {
+        border-color: var(--accent);
+        background: #eff6ff;
+        color: var(--accent);
+      }
+      .file-drop-zone.has-file {
+        border-color: var(--ok);
+        background: #f0fdf4;
+        color: #166534;
+      }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          order: 2;
+        }
+        .canvasWrap {
+          order: 1;
+        }
+        .canvas {
+          min-width: 700px;
+        }
+      }
     </style>
   </head>
   <body class="mode-edit">
@@ -102,8 +414,16 @@
           <button id="addStepBtn">Add step</button>
           <button id="addDecisionBtn">Add decision</button>
         </div>
-        <p class="hint editableOnly">Edit mode: drag boxes, select one to edit it, then connect it to next steps below. Run mode: click steps to cycle state; click decisions to toggle undecided → yes → no.</p>
-        <p class="hint runOnly">Run mode: click regular steps to cycle open → in progress → completed. Click decision boxes to cycle undecided → yes → no. Chosen decision paths are highlighted.</p>
+        <p class="hint editableOnly">
+          Edit mode: drag boxes, select one to edit it, then connect it to next
+          steps below. Run mode: click steps to cycle state; click decisions to
+          toggle undecided → yes → no.
+        </p>
+        <p class="hint runOnly">
+          Run mode: click regular steps to cycle open → in progress → completed.
+          Click decision boxes to cycle undecided → yes → no. Chosen decision
+          paths are highlighted.
+        </p>
         <div class="section">
           <span class="pill">Selected: <b id="selectedLabel">none</b></span>
           <div id="editor" class="editableOnly"></div>
@@ -111,8 +431,12 @@
         </div>
         <div class="section toolbar">
           <button class="secondary" id="resetBtn">Reset states</button>
-          <button class="secondary" id="exportDefaultBtn">Export defaults</button>
-          <button class="secondary" id="exportCurrentBtn">Export current</button>
+          <button class="secondary" id="exportDefaultBtn">
+            Export defaults
+          </button>
+          <button class="secondary" id="exportCurrentBtn">
+            Export current
+          </button>
           <button class="secondary" id="importBtn">Import JSON</button>
           <button class="danger" id="deleteBtn">Delete flow</button>
         </div>
@@ -121,7 +445,13 @@
           <div id="nodeList" class="list"></div>
         </div>
       </aside>
-      <div id="splitter" aria-hidden="false" title="Drag to resize" role="separator" aria-orientation="vertical"></div>
+      <div
+        id="splitter"
+        aria-hidden="false"
+        title="Drag to resize"
+        role="separator"
+        aria-orientation="vertical"
+      ></div>
       <section class="canvasWrap">
         <div id="canvas" class="canvas">
           <svg id="lines" class="lines"></svg>
@@ -133,9 +463,16 @@
       <div class="dialog">
         <h2 id="jsonTitle">JSON</h2>
         <!-- File drop zone (import mode only) -->
-        <div id="fileDropZone" class="file-drop-zone" style="display:none">
-          <span id="fileDropLabel">📂 Drop a JSON file here, or click to browse</span>
-          <input id="fileInput" type="file" accept=".json,application/json" style="display:none" />
+        <div id="fileDropZone" class="file-drop-zone" style="display: none">
+          <span id="fileDropLabel"
+            >📂 Drop a JSON file here, or click to browse</span
+          >
+          <input
+            id="fileInput"
+            type="file"
+            accept=".json,application/json"
+            style="display: none"
+          />
         </div>
         <textarea id="jsonText" class="jsonBox"></textarea>
         <div class="toolbar" style="margin-top: 10px">
@@ -151,31 +488,99 @@
       (() => {
         const STORAGE_KEY = "flowRunner.flows.v1";
         const $ = (id) => document.getElementById(id);
-        const canvas = $("canvas"), lines = $("lines");
+        const canvas = $("canvas"),
+          lines = $("lines");
         let flows = loadFlows();
-        let currentId = localStorage.getItem("flowRunner.currentId") || Object.keys(flows)[0];
+        let currentId =
+          localStorage.getItem("flowRunner.currentId") || Object.keys(flows)[0];
         let selectedId = null;
         let mode = "edit";
         if (!currentId || !flows[currentId]) currentId = createSampleFlow();
         let flow = flows[currentId];
 
-        function uid(prefix = "id") { return prefix + "_" + Math.random().toString(36).slice(2, 9); }
-        function emptyFlow(name = "Untitled flow") { return { id: uid("flow"), name, nodes: [], edges: [], updatedAt: new Date().toISOString() }; }
+        function uid(prefix = "id") {
+          return prefix + "_" + Math.random().toString(36).slice(2, 9);
+        }
+        function emptyFlow(name = "Untitled flow") {
+          return {
+            id: uid("flow"),
+            name,
+            nodes: [],
+            edges: [],
+            updatedAt: new Date().toISOString(),
+          };
+        }
         function sample() {
           const f = emptyFlow("Dishwasher flow");
-          const n1 = { id: uid("n"), type: "step", label: "Check dishwasher", x: 290, y: 35, state: "open" };
-          const n2 = { id: uid("n"), type: "decision", label: "Is dishwasher empty?", x: 310, y: 155, decision: "undecided" };
-          const n3 = { id: uid("n"), type: "step", label: "Empty dishwasher", x: 95, y: 380, state: "open" };
-          const n4 = { id: uid("n"), type: "step", label: "Load dishwasher", x: 510, y: 380, state: "open" };
+          const n1 = {
+            id: uid("n"),
+            type: "step",
+            label: "Check dishwasher",
+            x: 290,
+            y: 35,
+            state: "open",
+          };
+          const n2 = {
+            id: uid("n"),
+            type: "decision",
+            label: "Is dishwasher empty?",
+            x: 310,
+            y: 155,
+            decision: "undecided",
+          };
+          const n3 = {
+            id: uid("n"),
+            type: "step",
+            label: "Empty dishwasher",
+            x: 95,
+            y: 380,
+            state: "open",
+          };
+          const n4 = {
+            id: uid("n"),
+            type: "step",
+            label: "Load dishwasher",
+            x: 510,
+            y: 380,
+            state: "open",
+          };
           f.nodes = [n1, n2, n3, n4];
-          f.edges = [{ from: n1.id, to: n2.id, label: "" }, { from: n2.id, to: n3.id, label: "yes" }, { from: n2.id, to: n4.id, label: "no" }];
+          f.edges = [
+            { from: n1.id, to: n2.id, label: "" },
+            { from: n2.id, to: n3.id, label: "yes" },
+            { from: n2.id, to: n4.id, label: "no" },
+          ];
           return f;
         }
-        function createSampleFlow() { const f = sample(); flows[f.id] = f; saveAll(); return f.id; }
-        function loadFlows() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } }
-        function saveAll() { localStorage.setItem(STORAGE_KEY, JSON.stringify(flows)); localStorage.setItem("flowRunner.currentId", currentId); }
-        function saveFlow() { flow.updatedAt = new Date().toISOString(); flows[flow.id] = flow; saveAll(); renderLibrary(); render(); }
-        function saveFlowNoRender() { flow.updatedAt = new Date().toISOString(); flows[flow.id] = flow; saveAll(); }
+        function createSampleFlow() {
+          const f = sample();
+          flows[f.id] = f;
+          saveAll();
+          return f.id;
+        }
+        function loadFlows() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          } catch {
+            return {};
+          }
+        }
+        function saveAll() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(flows));
+          localStorage.setItem("flowRunner.currentId", currentId);
+        }
+        function saveFlow() {
+          flow.updatedAt = new Date().toISOString();
+          flows[flow.id] = flow;
+          saveAll();
+          renderLibrary();
+          render();
+        }
+        function saveFlowNoRender() {
+          flow.updatedAt = new Date().toISOString();
+          flows[flow.id] = flow;
+          saveAll();
+        }
 
         function render() {
           document.body.className = mode === "run" ? "mode-run" : "mode-edit";
@@ -183,89 +588,184 @@
           $("flowName").value = flow.name;
           canvas.querySelectorAll(".node").forEach((n) => n.remove());
           for (const n of flow.nodes) canvas.appendChild(nodeEl(n));
+          fitCanvasToNodes();
           drawLines();
           renderNodeList();
           renderEditor();
           renderRunner();
         }
+        function fitCanvasToNodes() {
+          let maxW = 760;
+          let maxH = 720;
+          for (const n of flow.nodes) {
+            const size =
+              n.type === "decision" ? { w: 150, h: 150 } : { w: 190, h: 78 };
+            maxW = Math.max(maxW, n.x + size.w + 40);
+            maxH = Math.max(maxH, n.y + size.h + 40);
+          }
+          canvas.style.width = `${maxW}px`;
+          canvas.style.height = `${maxH}px`;
+        }
         function nodeEl(n) {
           const el = document.createElement("div");
-          el.className = "node " + n.type + (n.id === selectedId ? " selected" : "");
+          el.className =
+            "node " + n.type + (n.id === selectedId ? " selected" : "");
           el.style.left = n.x + "px";
           el.style.top = n.y + "px";
           el.dataset.id = n.id;
-          const status = n.type === "decision" ? n.decision || "undecided" : n.state || "open";
-          const html = n.type === "decision"
-            ? `<div class="inner"><div class="title">${esc(n.label)}</div><span class="state ${status}">${status}</span></div>`
-            : `<div class="title">${esc(n.label)}</div><span class="state ${status}">${status}</span>`;
+          const status =
+            n.type === "decision"
+              ? n.decision || "undecided"
+              : n.state || "open";
+          const html =
+            n.type === "decision"
+              ? `<div class="inner"><div class="title">${esc(n.label)}</div><span class="state ${status}">${status}</span></div>`
+              : `<div class="title">${esc(n.label)}</div><span class="state ${status}">${status}</span>`;
           el.innerHTML = html;
           el.addEventListener("mousedown", startDrag);
-          el.addEventListener("click", (e) => { e.stopPropagation(); selectNode(n.id); if (mode === "run") cycleNode(n); });
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            selectNode(n.id);
+            if (mode === "run") cycleNode(n);
+          });
           return el;
         }
         function drawLines() {
           lines.innerHTML = "";
           const rect = canvas.getBoundingClientRect();
           for (const e of flow.edges) {
-            const a = flow.nodes.find((n) => n.id === e.from), b = flow.nodes.find((n) => n.id === e.to);
+            const a = flow.nodes.find((n) => n.id === e.from),
+              b = flow.nodes.find((n) => n.id === e.to);
             if (!a || !b) continue;
-            const chosen = a.type === "decision" && a.decision && a.decision === e.label;
-            const muted = a.type === "decision" && a.decision && a.decision !== "undecided" && a.decision !== e.label;
+            const chosen =
+              a.type === "decision" && a.decision && a.decision === e.label;
+            const muted =
+              a.type === "decision" &&
+              a.decision &&
+              a.decision !== "undecided" &&
+              a.decision !== e.label;
             const aEl = canvas.querySelector(`.node[data-id="${a.id}"]`);
             const bEl = canvas.querySelector(`.node[data-id="${b.id}"]`);
             if (!aEl || !bEl) continue;
             const aRect = aEl.getBoundingClientRect();
             const bRect = bEl.getBoundingClientRect();
-            const aCenter = { x: aRect.left - rect.left + aRect.width / 2, y: aRect.top - rect.top + aRect.height / 2 };
-            const bCenter = { x: bRect.left - rect.left + bRect.width / 2, y: bRect.top - rect.top + bRect.height / 2 };
-            const dx = bCenter.x - aCenter.x, dy = bCenter.y - aCenter.y;
+            const aCenter = {
+              x: aRect.left - rect.left + aRect.width / 2,
+              y: aRect.top - rect.top + aRect.height / 2,
+            };
+            const bCenter = {
+              x: bRect.left - rect.left + bRect.width / 2,
+              y: bRect.top - rect.top + bRect.height / 2,
+            };
+            const dx = bCenter.x - aCenter.x,
+              dy = bCenter.y - aCenter.y;
             const horizontal = Math.abs(dx) > Math.abs(dy);
-            let ax = horizontal ? aRect.left - rect.left + (dx > 0 ? aRect.width : 0) : aCenter.x;
-            let ay = horizontal ? aCenter.y : aRect.top - rect.top + (dy > 0 ? aRect.height : 0);
-            let bx = horizontal ? bRect.left - rect.left + (dx > 0 ? 0 : bRect.width) : bCenter.x;
-            let by = horizontal ? bCenter.y : bRect.top - rect.top + (dy > 0 ? 0 : bRect.height);
+            let ax = horizontal
+              ? aRect.left - rect.left + (dx > 0 ? aRect.width : 0)
+              : aCenter.x;
+            let ay = horizontal
+              ? aCenter.y
+              : aRect.top - rect.top + (dy > 0 ? aRect.height : 0);
+            let bx = horizontal
+              ? bRect.left - rect.left + (dx > 0 ? 0 : bRect.width)
+              : bCenter.x;
+            let by = horizontal
+              ? bCenter.y
+              : bRect.top - rect.top + (dy > 0 ? 0 : bRect.height);
             const arrowPadding = 2;
-            if (horizontal) { ax += Math.sign(dx) * arrowPadding; bx -= Math.sign(dx) * arrowPadding; }
-            else { ay += Math.sign(dy) * arrowPadding; by -= Math.sign(dy) * arrowPadding; }
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const cp1 = horizontal ? { x: ax + dx * 0.25, y: ay } : { x: ax, y: ay + dy * 0.25 };
-            const cp2 = horizontal ? { x: bx - dx * 0.25, y: by } : { x: bx, y: by - dy * 0.25 };
+            if (horizontal) {
+              ax += Math.sign(dx) * arrowPadding;
+              bx -= Math.sign(dx) * arrowPadding;
+            } else {
+              ay += Math.sign(dy) * arrowPadding;
+              by -= Math.sign(dy) * arrowPadding;
+            }
+            const path = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path",
+            );
+            const cp1 = horizontal
+              ? { x: ax + dx * 0.25, y: ay }
+              : { x: ax, y: ay + dy * 0.25 };
+            const cp2 = horizontal
+              ? { x: bx - dx * 0.25, y: by }
+              : { x: bx, y: by - dy * 0.25 };
             const mid = (ay + by) / 2;
-            path.setAttribute("d", `M ${ax} ${ay} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${bx} ${by}`);
+            path.setAttribute(
+              "d",
+              `M ${ax} ${ay} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${bx} ${by}`,
+            );
             path.setAttribute("fill", "none");
-            path.setAttribute("stroke", chosen ? "#16a34a" : muted ? "#d1d5db" : "#9ca3af");
+            path.setAttribute(
+              "stroke",
+              chosen ? "#16a34a" : muted ? "#d1d5db" : "#9ca3af",
+            );
             path.setAttribute("stroke-width", chosen ? "4" : "2");
             path.setAttribute("marker-end", "url(#arrowTip)");
             lines.appendChild(path);
             if (e.label) {
-              const tx = (ax + bx) / 2, ty = mid - 6;
-              const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              text.setAttribute("x", tx); text.setAttribute("y", ty); text.setAttribute("text-anchor", "middle");
-              text.setAttribute("font-size", "12"); text.setAttribute("fill", chosen ? "#166534" : "#4b5563");
+              const tx = (ax + bx) / 2,
+                ty = mid - 6;
+              const text = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "text",
+              );
+              text.setAttribute("x", tx);
+              text.setAttribute("y", ty);
+              text.setAttribute("text-anchor", "middle");
+              text.setAttribute("font-size", "12");
+              text.setAttribute("fill", chosen ? "#166534" : "#4b5563");
               text.textContent = e.label;
               lines.appendChild(text);
             }
           }
-          const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-          defs.innerHTML = '<marker id="arrowTip" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 12 6 L 0 12 z" fill="#9ca3af"/></marker>';
+          const defs = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "defs",
+          );
+          defs.innerHTML =
+            '<marker id="arrowTip" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 12 6 L 0 12 z" fill="#9ca3af"/></marker>';
           lines.prepend(defs);
         }
         function renderLibrary() {
-          $("library").innerHTML = Object.values(flows).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""))
-            .map((f) => `<option value="${f.id}" ${f.id === currentId ? "selected" : ""}>${esc(f.name)}</option>`).join("");
+          $("library").innerHTML = Object.values(flows)
+            .sort((a, b) =>
+              (b.updatedAt || "").localeCompare(a.updatedAt || ""),
+            )
+            .map(
+              (f) =>
+                `<option value="${f.id}" ${f.id === currentId ? "selected" : ""}>${esc(f.name)}</option>`,
+            )
+            .join("");
         }
         function renderNodeList() {
-          $("nodeList").innerHTML = flow.nodes.map((n) =>
-            `<div class="item ${n.id === selectedId ? "active" : ""}" data-id="${n.id}"><b>${esc(n.label)}</b><div class="meta">${n.type} · ${n.type === "decision" ? n.decision || "undecided" : n.state || "open"}</div></div>`
-          ).join("");
-          $("nodeList").querySelectorAll(".item").forEach((el) => (el.onclick = () => selectNode(el.dataset.id)));
-          $("selectedLabel").textContent = selectedId ? flow.nodes.find((n) => n.id === selectedId)?.label || "none" : "none";
+          $("nodeList").innerHTML = flow.nodes
+            .map(
+              (n) =>
+                `<div class="item ${n.id === selectedId ? "active" : ""}" data-id="${n.id}"><b>${esc(n.label)}</b><div class="meta">${n.type} · ${n.type === "decision" ? n.decision || "undecided" : n.state || "open"}</div></div>`,
+            )
+            .join("");
+          $("nodeList")
+            .querySelectorAll(".item")
+            .forEach((el) => (el.onclick = () => selectNode(el.dataset.id)));
+          $("selectedLabel").textContent = selectedId
+            ? flow.nodes.find((n) => n.id === selectedId)?.label || "none"
+            : "none";
         }
         function renderEditor() {
           const n = flow.nodes.find((x) => x.id === selectedId);
-          if (!n) { $("editor").innerHTML = '<p class="hint">Select a node to edit details and connections.</p>'; return; }
-          const options = flow.nodes.filter((x) => x.id !== n.id).map((x) => `<option value="${x.id}">${esc(x.label)}</option>`).join("");
-          const allConnected = flow.edges.filter((e) => e.from === n.id || e.to === n.id);
+          if (!n) {
+            $("editor").innerHTML =
+              '<p class="hint">Select a node to edit details and connections.</p>';
+            return;
+          }
+          const options = flow.nodes
+            .filter((x) => x.id !== n.id)
+            .map((x) => `<option value="${x.id}">${esc(x.label)}</option>`)
+            .join("");
+          const allConnected = flow.edges.filter(
+            (e) => e.from === n.id || e.to === n.id,
+          );
           $("editor").innerHTML = `
       <div class="field"><label>Label</label><textarea id="editLabel">${esc(n.label)}</textarea></div>
       <div class="row"><div class="field"><label>X</label><input id="editX" type="number" value="${n.x}"></div><div class="field"><label>Y</label><input id="editY" type="number" value="${n.y}"></div></div>
@@ -275,70 +775,127 @@
         <label style="display:flex; gap:6px; margin:4px 0"><input type="radio" name="direction" value="in"> ← to this node</label>
       </div>
       <button id="addEdgeBtn" style="width:100%">Add connection</button></div>
-      <table class="edgeTable"><tr><th>Connection</th><th>Label</th><th></th></tr>${allConnected.map((e, i) => {
-        const isOutgoing = e.from === n.id;
-        const otherNodeId = isOutgoing ? e.to : e.from;
-        const otherNode = flow.nodes.find((x) => x.id === otherNodeId);
-        const arrow = isOutgoing ? "→" : "←";
-        return `<tr><td>${arrow} ${esc(otherNode?.label || "?")}</td><td>${esc(e.label || "")}</td><td><button class="small secondary" data-edge="${i}" data-dir="${isOutgoing ? "out" : "in"}" data-other-node="${otherNodeId}" data-edge-label="${e.label || ""}">remove</button></td></tr>`;
-      }).join("")}</table>
+      <table class="edgeTable"><tr><th>Connection</th><th>Label</th><th></th></tr>${allConnected
+        .map((e, i) => {
+          const isOutgoing = e.from === n.id;
+          const otherNodeId = isOutgoing ? e.to : e.from;
+          const otherNode = flow.nodes.find((x) => x.id === otherNodeId);
+          const arrow = isOutgoing ? "→" : "←";
+          return `<tr><td>${arrow} ${esc(otherNode?.label || "?")}</td><td>${esc(e.label || "")}</td><td><button class="small secondary" data-edge="${i}" data-dir="${isOutgoing ? "out" : "in"}" data-other-node="${otherNodeId}" data-edge-label="${e.label || ""}">remove</button></td></tr>`;
+        })
+        .join("")}</table>
       <div class="toolbar" style="margin-top:10px"><button class="danger" id="removeNodeBtn">Remove node</button></div>`;
           let labelSaveTimer;
           $("editLabel").oninput = (e) => {
             n.label = e.target.value;
             const nodeDom = canvas.querySelector(`.node[data-id="${n.id}"]`);
-            if (nodeDom) { const title = nodeDom.querySelector(".title"); if (title) title.textContent = n.label; }
-            const listItem = $("nodeList").querySelector(`.item[data-id="${n.id}"] b`);
+            if (nodeDom) {
+              const title = nodeDom.querySelector(".title");
+              if (title) title.textContent = n.label;
+            }
+            const listItem = $("nodeList").querySelector(
+              `.item[data-id="${n.id}"] b`,
+            );
             if (listItem) listItem.textContent = n.label;
             $("selectedLabel").textContent = n.label || "none";
             clearTimeout(labelSaveTimer);
             labelSaveTimer = setTimeout(() => saveFlowNoRender(), 400);
           };
-          $("editX").onchange = (e) => { n.x = +e.target.value || 0; saveFlow(); };
-          $("editY").onchange = (e) => { n.y = +e.target.value || 0; saveFlow(); };
-          $("addEdgeBtn").onclick = () => {
-            const direction = document.querySelector('input[name="direction"]:checked').value;
-            const toNodeId = $("connectTo").value;
-            const label = $("connectLabel").value.trim().toLowerCase();
-            if (direction === "out") flow.edges.push({ from: n.id, to: toNodeId, label });
-            else flow.edges.push({ from: toNodeId, to: n.id, label });
-            $("connectLabel").value = "";
-            document.querySelector('input[name="direction"][value="out"]').checked = true;
+          $("editX").onchange = (e) => {
+            n.x = +e.target.value || 0;
             saveFlow();
           };
-          $("editor").querySelectorAll("[data-edge]").forEach((btn) => (btn.onclick = () => {
-            const otherNodeId = btn.dataset.otherNode;
-            const label = btn.dataset.edgeLabel;
-            const dir = btn.dataset.dir;
-            const idx = flow.edges.findIndex((e) => {
-              if (dir === "out") return e.from === n.id && e.to === otherNodeId && e.label === label;
-              else return e.to === n.id && e.from === otherNodeId && e.label === label;
-            });
-            if (idx >= 0) flow.edges.splice(idx, 1);
+          $("editY").onchange = (e) => {
+            n.y = +e.target.value || 0;
             saveFlow();
-          }));
+          };
+          $("addEdgeBtn").onclick = () => {
+            const direction = document.querySelector(
+              'input[name="direction"]:checked',
+            ).value;
+            const toNodeId = $("connectTo").value;
+            const label = $("connectLabel").value.trim().toLowerCase();
+            if (direction === "out")
+              flow.edges.push({ from: n.id, to: toNodeId, label });
+            else flow.edges.push({ from: toNodeId, to: n.id, label });
+            $("connectLabel").value = "";
+            document.querySelector(
+              'input[name="direction"][value="out"]',
+            ).checked = true;
+            saveFlow();
+          };
+          $("editor")
+            .querySelectorAll("[data-edge]")
+            .forEach(
+              (btn) =>
+                (btn.onclick = () => {
+                  const otherNodeId = btn.dataset.otherNode;
+                  const label = btn.dataset.edgeLabel;
+                  const dir = btn.dataset.dir;
+                  const idx = flow.edges.findIndex((e) => {
+                    if (dir === "out")
+                      return (
+                        e.from === n.id &&
+                        e.to === otherNodeId &&
+                        e.label === label
+                      );
+                    else
+                      return (
+                        e.to === n.id &&
+                        e.from === otherNodeId &&
+                        e.label === label
+                      );
+                  });
+                  if (idx >= 0) flow.edges.splice(idx, 1);
+                  saveFlow();
+                }),
+            );
           $("removeNodeBtn").onclick = () => {
             flow.nodes = flow.nodes.filter((x) => x.id !== n.id);
-            flow.edges = flow.edges.filter((e) => e.from !== n.id && e.to !== n.id);
+            flow.edges = flow.edges.filter(
+              (e) => e.from !== n.id && e.to !== n.id,
+            );
             selectedId = null;
             saveFlow();
           };
         }
         function renderRunner() {
           const n = flow.nodes.find((x) => x.id === selectedId);
-          if (!n) { $("runner").innerHTML = '<p class="hint">Select or click a node to update it.</p>'; return; }
-          const val = n.type === "decision" ? n.decision || "undecided" : n.state || "open";
-          $("runner").innerHTML = `<div class="item"><b>${esc(n.label)}</b><div class="meta">Current: ${val}</div><div class="toolbar" style="margin-top:8px">${n.type === "decision" ? '<button data-set="undecided" class="secondary">Undecided</button><button data-set="yes">Yes</button><button data-set="no" class="danger">No</button>' : '<button data-set="open" class="secondary">Open</button><button data-set="in-progress">In progress</button><button data-set="completed">Completed</button>'}</div></div>`;
-          $("runner").querySelectorAll("[data-set]").forEach((b) => (b.onclick = () => {
-            if (n.type === "decision") n.decision = b.dataset.set;
-            else n.state = b.dataset.set;
-            saveFlow();
-          }));
+          if (!n) {
+            $("runner").innerHTML =
+              '<p class="hint">Select or click a node to update it.</p>';
+            return;
+          }
+          const val =
+            n.type === "decision"
+              ? n.decision || "undecided"
+              : n.state || "open";
+          $("runner").innerHTML =
+            `<div class="item"><b>${esc(n.label)}</b><div class="meta">Current: ${val}</div><div class="toolbar" style="margin-top:8px">${n.type === "decision" ? '<button data-set="undecided" class="secondary">Undecided</button><button data-set="yes">Yes</button><button data-set="no" class="danger">No</button>' : '<button data-set="open" class="secondary">Open</button><button data-set="in-progress">In progress</button><button data-set="completed">Completed</button>'}</div></div>`;
+          $("runner")
+            .querySelectorAll("[data-set]")
+            .forEach(
+              (b) =>
+                (b.onclick = () => {
+                  if (n.type === "decision") n.decision = b.dataset.set;
+                  else n.state = b.dataset.set;
+                  saveFlow();
+                }),
+            );
         }
-        function selectNode(id) { selectedId = id; render(); }
+        function selectNode(id) {
+          selectedId = id;
+          render();
+        }
         function cycleNode(n) {
-          if (n.type === "decision") { const a = ["undecided", "yes", "no"]; n.decision = a[(a.indexOf(n.decision || "undecided") + 1) % a.length]; }
-          else { const a = ["open", "in-progress", "completed"]; n.state = a[(a.indexOf(n.state || "open") + 1) % a.length]; }
+          if (n.type === "decision") {
+            const a = ["undecided", "yes", "no"];
+            n.decision =
+              a[(a.indexOf(n.decision || "undecided") + 1) % a.length];
+          } else {
+            const a = ["open", "in-progress", "completed"];
+            n.state = a[(a.indexOf(n.state || "open") + 1) % a.length];
+          }
           saveFlow();
         }
         let drag = null;
@@ -351,16 +908,41 @@
           document.addEventListener("mousemove", move);
           document.addEventListener("mouseup", up);
         }
-        function move(e) { if (!drag) return; drag.n.x = Math.max(0, e.clientX - drag.dx); drag.n.y = Math.max(0, e.clientY - drag.dy); render(); }
-        function up() { if (drag) { saveFlow(); drag = null; } document.removeEventListener("mousemove", move); document.removeEventListener("mouseup", up); }
+        function move(e) {
+          if (!drag) return;
+          drag.n.x = Math.max(0, e.clientX - drag.dx);
+          drag.n.y = Math.max(0, e.clientY - drag.dy);
+          render();
+        }
+        function up() {
+          if (drag) {
+            saveFlow();
+            drag = null;
+          }
+          document.removeEventListener("mousemove", move);
+          document.removeEventListener("mouseup", up);
+        }
         function addNode(type) {
-          const n = { id: uid("n"), type, label: type === "decision" ? "New decision?" : "New step", x: 260 + Math.random() * 160, y: 100 + Math.random() * 240 };
-          if (type === "decision") n.decision = "undecided"; else n.state = "open";
-          flow.nodes.push(n); selectedId = n.id; saveFlow();
+          const n = {
+            id: uid("n"),
+            type,
+            label: type === "decision" ? "New decision?" : "New step",
+            x: 260 + Math.random() * 160,
+            y: 100 + Math.random() * 240,
+          };
+          if (type === "decision") n.decision = "undecided";
+          else n.state = "open";
+          flow.nodes.push(n);
+          selectedId = n.id;
+          saveFlow();
         }
         function exportFlow(current) {
           const clone = JSON.parse(JSON.stringify(flow));
-          if (!current) clone.nodes.forEach((n) => { if (n.type === "decision") n.decision = "undecided"; else n.state = "open"; });
+          if (!current)
+            clone.nodes.forEach((n) => {
+              if (n.type === "decision") n.decision = "undecided";
+              else n.state = "open";
+            });
           return JSON.stringify(clone, null, 2);
         }
 
@@ -370,11 +952,14 @@
           importMode = isImport;
           $("jsonTitle").textContent = title;
           $("jsonText").value = text;
-          $("applyImportBtn").style.display = isImport ? "inline-block" : "none";
+          $("applyImportBtn").style.display = isImport
+            ? "inline-block"
+            : "none";
           const dropZone = $("fileDropZone");
           dropZone.style.display = isImport ? "block" : "none";
           if (isImport) {
-            $("fileDropLabel").textContent = "📂 Drop a JSON file here, or click to browse";
+            $("fileDropLabel").textContent =
+              "📂 Drop a JSON file here, or click to browse";
             dropZone.classList.remove("has-file", "drag-over");
             $("fileInput").value = "";
           }
@@ -393,8 +978,13 @@
         });
 
         // Drag-and-drop onto the drop zone
-        $("fileDropZone").addEventListener("dragover", (e) => { e.preventDefault(); $("fileDropZone").classList.add("drag-over"); });
-        $("fileDropZone").addEventListener("dragleave", () => $("fileDropZone").classList.remove("drag-over"));
+        $("fileDropZone").addEventListener("dragover", (e) => {
+          e.preventDefault();
+          $("fileDropZone").classList.add("drag-over");
+        });
+        $("fileDropZone").addEventListener("dragleave", () =>
+          $("fileDropZone").classList.remove("drag-over"),
+        );
         $("fileDropZone").addEventListener("drop", (e) => {
           e.preventDefault();
           $("fileDropZone").classList.remove("drag-over");
@@ -404,7 +994,9 @@
         });
 
         // Also allow drag-and-drop anywhere on the modal backdrop when in import mode
-        $("jsonModal").addEventListener("dragover", (e) => { if (importMode) e.preventDefault(); });
+        $("jsonModal").addEventListener("dragover", (e) => {
+          if (importMode) e.preventDefault();
+        });
         $("jsonModal").addEventListener("drop", (e) => {
           if (!importMode) return;
           e.preventDefault();
@@ -414,78 +1006,181 @@
         });
 
         function loadFile(file) {
-          if (!file.name.endsWith(".json") && file.type !== "application/json") {
+          if (
+            !file.name.endsWith(".json") &&
+            file.type !== "application/json"
+          ) {
             alert("Please select a .json file.");
             return;
           }
           const reader = new FileReader();
           reader.onload = (ev) => {
             $("jsonText").value = ev.target.result;
-            $("fileDropLabel").textContent = `✅ ${file.name} loaded — review below or click Import`;
+            $("fileDropLabel").textContent =
+              `✅ ${file.name} loaded — review below or click Import`;
             $("fileDropZone").classList.add("has-file");
           };
           reader.readAsText(file);
         }
 
-        function esc(s) { return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+        function esc(s) {
+          return String(s ?? "").replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        }
 
-        $("flowName").oninput = (e) => { flow.name = e.target.value || "Untitled flow"; saveFlow(); };
+        $("flowName").oninput = (e) => {
+          flow.name = e.target.value || "Untitled flow";
+          saveFlow();
+        };
         $("saveBtn").onclick = saveFlow;
-        $("modeBtn").onclick = () => { mode = mode === "edit" ? "run" : "edit"; render(); };
+        $("modeBtn").onclick = () => {
+          mode = mode === "edit" ? "run" : "edit";
+          render();
+        };
         $("addStepBtn").onclick = () => addNode("step");
         $("addDecisionBtn").onclick = () => addNode("decision");
-        $("library").onchange = (e) => { currentId = e.target.value; flow = flows[currentId]; selectedId = null; saveAll(); render(); };
-        $("newFlowBtn").onclick = () => { flow = emptyFlow("New flow"); flows[flow.id] = flow; currentId = flow.id; selectedId = null; saveFlow(); renderLibrary(); };
-        $("resetBtn").onclick = () => { flow.nodes.forEach((n) => { if (n.type === "decision") n.decision = "undecided"; else n.state = "open"; }); saveFlow(); };
+        $("library").onchange = (e) => {
+          currentId = e.target.value;
+          flow = flows[currentId];
+          selectedId = null;
+          saveAll();
+          render();
+        };
+        $("newFlowBtn").onclick = () => {
+          flow = emptyFlow("New flow");
+          flows[flow.id] = flow;
+          currentId = flow.id;
+          selectedId = null;
+          saveFlow();
+          renderLibrary();
+        };
+        $("resetBtn").onclick = () => {
+          flow.nodes.forEach((n) => {
+            if (n.type === "decision") n.decision = "undecided";
+            else n.state = "open";
+          });
+          saveFlow();
+        };
         $("deleteBtn").onclick = () => {
           if (!confirm("Delete this flow?")) return;
           delete flows[flow.id];
           currentId = Object.keys(flows)[0] || createSampleFlow();
-          flow = flows[currentId]; selectedId = null; saveAll(); renderLibrary(); render();
+          flow = flows[currentId];
+          selectedId = null;
+          saveAll();
+          renderLibrary();
+          render();
         };
-        $("exportDefaultBtn").onclick = () => openJson("Export defaults", exportFlow(false));
-        $("exportCurrentBtn").onclick = () => openJson("Export current state", exportFlow(true));
+        $("exportDefaultBtn").onclick = () =>
+          openJson("Export defaults", exportFlow(false));
+        $("exportCurrentBtn").onclick = () =>
+          openJson("Export current state", exportFlow(true));
         $("importBtn").onclick = () => openJson("Import JSON", "", true);
-        $("copyJsonBtn").onclick = () => navigator.clipboard.writeText($("jsonText").value);
+        $("copyJsonBtn").onclick = () =>
+          navigator.clipboard.writeText($("jsonText").value);
         $("downloadJsonBtn").onclick = () => {
           const a = document.createElement("a");
-          a.href = URL.createObjectURL(new Blob([$("jsonText").value], { type: "application/json" }));
-          a.download = (flow.name || "flow").replace(/[^a-z0-9_-]+/gi, "_") + ".json";
+          a.href = URL.createObjectURL(
+            new Blob([$("jsonText").value], { type: "application/json" }),
+          );
+          a.download =
+            (flow.name || "flow").replace(/[^a-z0-9_-]+/gi, "_") + ".json";
           a.click();
         };
         $("applyImportBtn").onclick = () => {
           try {
             const imported = JSON.parse($("jsonText").value);
-            if (!imported.nodes || !Array.isArray(imported.nodes)) throw new Error("Missing nodes array");
+            if (!imported.nodes || !Array.isArray(imported.nodes))
+              throw new Error("Missing nodes array");
             imported.id = imported.id || uid("flow");
             imported.name = imported.name || "Imported flow";
-            imported.edges = Array.isArray(imported.edges) ? imported.edges : [];
+            imported.edges = Array.isArray(imported.edges)
+              ? imported.edges
+              : [];
             imported.updatedAt = new Date().toISOString();
             flows[imported.id] = imported;
             currentId = imported.id;
-            flow = imported; selectedId = null;
-            saveAll(); renderLibrary(); render();
+            flow = imported;
+            selectedId = null;
+            saveAll();
+            renderLibrary();
+            render();
             $("jsonModal").classList.remove("open");
-          } catch (e) { alert("Invalid JSON: " + e.message); }
+          } catch (e) {
+            alert("Invalid JSON: " + e.message);
+          }
         };
-        $("closeModalBtn").onclick = () => $("jsonModal").classList.remove("open");
-        canvas.onclick = () => { selectedId = null; render(); };
+        $("closeModalBtn").onclick = () =>
+          $("jsonModal").classList.remove("open");
+        canvas.onclick = () => {
+          selectedId = null;
+          render();
+        };
 
         // Splitter
         (function initSplitter() {
-          const splitter = $("splitter"), main = document.querySelector("main");
+          const splitter = $("splitter"),
+            main = document.querySelector("main");
           if (!splitter || !main) return;
           const storageKey = "flowRunner.leftWidth";
-          let dragging = false, startX = 0, startWidth = 0;
-          const getLeftFromGrid = () => { const cols = getComputedStyle(main).gridTemplateColumns.split(" "); const left = parseFloat(cols[0]); return isNaN(left) ? 360 : left; };
+          let dragging = false,
+            startX = 0,
+            startWidth = 0;
+          const getLeftFromGrid = () => {
+            const cols = getComputedStyle(main).gridTemplateColumns.split(" ");
+            const left = parseFloat(cols[0]);
+            return isNaN(left) ? 360 : left;
+          };
           const saved = parseInt(localStorage.getItem(storageKey), 10);
-          if (saved && !isNaN(saved)) main.style.gridTemplateColumns = `${saved}px 10px 1fr`;
-          splitter.addEventListener("mousedown", (e) => { dragging = true; startX = e.clientX; startWidth = getLeftFromGrid(); document.body.style.userSelect = "none"; document.body.style.cursor = "col-resize"; });
-          document.addEventListener("mousemove", (e) => { if (!dragging) return; const dx = e.clientX - startX; let newWidth = Math.round(startWidth + dx); const min = 220, max = Math.max(320, window.innerWidth - 320); newWidth = Math.max(min, Math.min(max, newWidth)); main.style.gridTemplateColumns = `${newWidth}px 10px 1fr`; localStorage.setItem(storageKey, newWidth); });
-          document.addEventListener("mouseup", () => { if (dragging) { dragging = false; document.body.style.userSelect = "auto"; document.body.style.cursor = ""; } });
-          splitter.addEventListener("touchstart", (e) => { const t = e.touches[0]; dragging = true; startX = t.clientX; startWidth = getLeftFromGrid(); });
-          document.addEventListener("touchmove", (e) => { if (!dragging) return; const t = e.touches[0]; const dx = t.clientX - startX; let newWidth = Math.round(startWidth + dx); const min = 220, max = Math.max(320, window.innerWidth - 320); newWidth = Math.max(min, Math.min(max, newWidth)); main.style.gridTemplateColumns = `${newWidth}px 10px 1fr`; localStorage.setItem(storageKey, newWidth); });
-          document.addEventListener("touchend", () => { if (dragging) dragging = false; });
+          if (saved && !isNaN(saved))
+            main.style.gridTemplateColumns = `${saved}px 10px 1fr`;
+          splitter.addEventListener("mousedown", (e) => {
+            dragging = true;
+            startX = e.clientX;
+            startWidth = getLeftFromGrid();
+            document.body.style.userSelect = "none";
+            document.body.style.cursor = "col-resize";
+          });
+          document.addEventListener("mousemove", (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            let newWidth = Math.round(startWidth + dx);
+            const min = 220,
+              max = Math.max(320, window.innerWidth - 320);
+            newWidth = Math.max(min, Math.min(max, newWidth));
+            main.style.gridTemplateColumns = `${newWidth}px 10px 1fr`;
+            localStorage.setItem(storageKey, newWidth);
+          });
+          document.addEventListener("mouseup", () => {
+            if (dragging) {
+              dragging = false;
+              document.body.style.userSelect = "auto";
+              document.body.style.cursor = "";
+            }
+          });
+          splitter.addEventListener("touchstart", (e) => {
+            const t = e.touches[0];
+            dragging = true;
+            startX = t.clientX;
+            startWidth = getLeftFromGrid();
+          });
+          document.addEventListener("touchmove", (e) => {
+            if (!dragging) return;
+            const t = e.touches[0];
+            const dx = t.clientX - startX;
+            let newWidth = Math.round(startWidth + dx);
+            const min = 220,
+              max = Math.max(320, window.innerWidth - 320);
+            newWidth = Math.max(min, Math.min(max, newWidth));
+            main.style.gridTemplateColumns = `${newWidth}px 10px 1fr`;
+            localStorage.setItem(storageKey, newWidth);
+          });
+          document.addEventListener("touchend", () => {
+            if (dragging) dragging = false;
+          });
         })();
 
         renderLibrary();
